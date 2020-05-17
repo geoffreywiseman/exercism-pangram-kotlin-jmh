@@ -11,7 +11,17 @@ import org.openjdk.jmh.annotations.State
 @State(Scope.Benchmark)
 open class PangramBenchmark {
 
-	val testCases = listOf("the quick brown fox jumped over the lazy dog", "abcdefghijklmnopqrstuvwxyz", "this is not a pangram")
+	val testCases = listOf(
+			"the quick brown fox jumped over the lazy dog",
+			"abcdefghijklmnopqrstuvwxyz",
+			"this is not a pangram",
+			"short",
+			"""
+				An extremely long string which would probably be a pangram if it weren't for the fact that certain
+				characters, like q and z aren't terribly likely to appear in a typical sentence. Of course, I've
+				just included them, but there are other similar letters that I haven't included.
+			""".trimIndent()
+	)
 
 	@Benchmark
 	fun benchmarkMutableSetPangram() {
@@ -31,5 +41,10 @@ open class PangramBenchmark {
 	@Benchmark
 	fun benchmarkRegexCountPangram() {
 		testCases.forEach { RegexCountPangram.isPangram(it) }
+	}
+
+	@Benchmark
+	fun benchmarkFilterCountDistinctPangram() {
+		testCases.forEach { FilterCountDistinctPangram.isPangram(it) }
 	}
 }

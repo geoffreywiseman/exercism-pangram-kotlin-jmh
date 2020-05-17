@@ -20,14 +20,10 @@ There are lots more, these are just a few that I benchmarked.
 
 ## Results
 
+Can run benchmarks like this: `gradle jmh`
+
 ```
-Result "bench.PangramBenchmark.benchmarkRegexCountPangram":
-  109766.631 ±(99.9%) 4874.461 ops/s [Average]
-  (min, avg, max) = (94112.081, 109766.631, 114927.307), stdev = 6507.265
-  CI (99.9%): [104892.170, 114641.092] (assumes normal distribution)
-
-
-# Run complete. Total time: 00:33:30
+# Run complete. Total time: 00:41:50
 
 REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
 why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
@@ -35,26 +31,31 @@ experiments, perform baseline and negative tests that provide experimental contr
 the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
 Do not assume the numbers tell you what you want them to tell.
 
-Benchmark                                     Mode  Cnt       Score       Error  Units
-PangramBenchmark.benchmarkDoubleSetPangram   thrpt   25  265161.312 ± 33405.826  ops/s
-PangramBenchmark.benchmarkMutableSetPangram  thrpt   25  480363.900 ± 55898.405  ops/s
-PangramBenchmark.benchmarkRangeAllPangram    thrpt   25  175971.288 ± 10583.247  ops/s
-PangramBenchmark.benchmarkRegexCountPangram  thrpt   25  109766.631 ±  4874.461  ops/s
-```
+Benchmark                                               Mode  Cnt       Score      Error  Units
+PangramBenchmark.benchmarkDoubleSetPangram             thrpt   25  124817.385 ± 3250.771  ops/s
+PangramBenchmark.benchmarkFilterCountDisctinctPangram  thrpt   25  145760.966 ± 4418.056  ops/s
+PangramBenchmark.benchmarkMutableSetPangram            thrpt   25  302762.923 ± 4839.751  ops/s
+PangramBenchmark.benchmarkRangeAllPangram              thrpt   25   97770.956 ± 6110.623  ops/s
+PangramBenchmark.benchmarkRegexCountPangram            thrpt   25   32640.235 ±  215.067  ops/s```
 
 Basically:
 
 - The `MutableSet` approach is far and away the fastest.
     - It was my first implementation for Pangram
     - I do prefer the legibility of the RangeAll approach
+- Then 'FilterCountDistinct', a new addition
+    - Ported from a student's exercise solution
+    - Performs fairly well, looks pretty clean/legible.
+    - This is probably the winner of the more functional approaches.
 - Then comes `DoubleSet`
     - Feels a bit cleaner, mostly because it's less reliant on mutation
     - barely faster than half the speed of the mutable set
 - Then comes `RangeAll`
-    - A bit faster than a third of the speed of `MutableSet`
+    - Roughly a third of the speed of `MutableSet`
     - Probably my favorite in terms of legibility
+    - Comparatively slow
 - `RegexCount` is dead last
     - I ported this from a community solution
-    - about 20% of `MutableSet`'s speed
+    - about 10% of `MutableSet`'s speed
 
-Of course, there are lots of other approaches, and also ways to lightly tweak these approaches to make them more performant. This isn't meant to be exhaustive, it was just an exploration of the viarous options.
+Of course, there are lots of other approaches, and also ways to lightly tweak these approaches to make them more performant. This isn't meant to be exhaustive, it was just an exploration of the various options.
